@@ -26,7 +26,7 @@ def metamaskSetup(recoveryPhrase, password):
     driver.find_element_by_css_selector('.first-time-flow__terms').click()
     driver.find_element_by_xpath('//button[text()="Importar"]').click()
 
-    time.sleep(2)
+    time.sleep(4)
 
     driver.find_element_by_xpath('//button[text()="Tudo pronto"]').click()
     time.sleep(1)
@@ -39,24 +39,83 @@ def metamaskSetup(recoveryPhrase, password):
     time.sleep(1)
 
 
-def rentHorse():
+def connectDanki():
     driver.switch_to.window(driver.window_handles[1])
     time.sleep(2)
-    flag = True
+    driver.find_element_by_xpath('/html/body/div[2]/header/div/div[3]/div/a').click()
+    driver.execute_script("window.open('');")
+    driver.switch_to.window(driver.window_handles[2])
+    driver.get('chrome-extension://{}/popup.html'.format(EXTENSION_ID))
+    time.sleep(5)
+    driver.execute_script("window.scrollBy(0, document.body.scrollHeight)")
+    time.sleep(3)
+    driver.find_element_by_xpath('//*[@id="app-content"]/div/div[2]/div/div[2]/div[3]/div[2]/button[2]').click()
+    time.sleep(1)
+    driver.find_element_by_xpath('//*[@id="app-content"]/div/div[2]/div/div[2]/div[2]/div[2]/footer/button[2]').click()
+    time.sleep(3)
+    print('Site connected to metamask')
+    print(driver.window_handles)
 
-    
-    try:
-        while flag is True: 
-            driver.find_element_by_css_selector('.button-game-content').click()
-            WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR,"iframe[name^='a-'][src^='https://www.google.com/recaptcha/api2/anchor?']")))
-            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//span[@id='recaptcha-anchor']"))).click()
-            driver.find_element_by_xpath('//button[text()="Rent"]').click()
-        else:
-            driver.find_element_by_xpath('//button[text()="Compona"]').click()
-            time.sleep(1)
-            driver.find_element_by_xpath('//button[text()="Haz"]').click()
-    except Exception as e:
-            socket.send("::".join(['FATALERROR', e.__class__.__name__, e.message]))
+
+def getDanki():
+    driver.switch_to.window(driver.window_handles[1])
+    time.sleep(2)
+    driver.refresh()
+    time.sleep(3)
+    driver.find_element_by_xpath('/html/body/div[2]/header/div/div[2]/a').click()
+    time.sleep(4)
+    alert = driver.switch_to.alert
+    text = alert.text
+    print(text)
+    alert.accept()
+    time.sleep(2)
+    while True:
+        time.sleep(3)
+        driver.find_element_by_xpath('/html/body/div[2]/header/div/div[2]/a').click()
+        time.sleep(4)
+        alert = driver.switch_to.alert
+        text = alert.text
+        print(text)
+        time.sleep(2)
+        if(text == "⭐ Confirme a Transação na Metamask para sacar seus Danki Tokens!"):
+            alert.accept()
+            time.sleep(3)
+            driver.get('chrome-extension://{}/popup.html'.format(EXTENSION_ID))
+            time.sleep(3)
+            driver.find_element_by_xpath('//*[@id="app-content"]/div/div[2]/div/div[2]/div[3]/div[2]/button[2]').click()
+            time.sleep(8)
+            break
+        else: 
+            alert.accept()
+
+    # Sucesso
+    # ⭐ Confirme a Transação na Metamask para sacar seus Danki Tokens!
+
+    # Sucesso
+    # Saque efetuado com Sucesso! Danki Tokens adicionados em sua Metamask!
+
+
+
+
+def connectToWebsite():
+    time.sleep(3)
+
+    driver.execute_script("window.open('');")
+    driver.switch_to.window(driver.window_handles[1])
+
+    driver.get('chrome-extension://{}/popup.html'.format(EXTENSION_ID))
+    time.sleep(5)
+    driver.execute_script("window.scrollBy(0, document.body.scrollHeight)")
+    time.sleep(3)
+    driver.find_element_by_xpath('//*[@id="app-content"]/div/div[3]/div/div[2]/div[4]/div[2]/button[2]').click()
+    time.sleep(1)
+    driver.find_element_by_xpath('//*[@id="app-content"]/div/div[3]/div/div[2]/div[2]/div[2]/footer/button[2]').click()
+    time.sleep(3)
+    print('Site connected to metamask')
+    print(driver.window_handles)
+    driver.switch_to.window(driver.window_handles[0])
+    time.sleep(3)
+
 
 
 def changeMetamaskNetwork():
@@ -71,48 +130,31 @@ def changeMetamaskNetwork():
     time.sleep(2)
     print("opening network dropdown")
     inputs = driver.find_elements_by_xpath('//input')
-    inputs[0].send_keys("Polygon")
-    inputs[1].send_keys("https://polygon-rpc.com")
-    inputs[2].send_keys("137")
-    inputs[3].send_keys("MATIC")
-    inputs[4].send_keys("https://polygonscan.com/")
+    inputs[0].send_keys("Smart Chain")
+    inputs[1].send_keys("https://bsc-dataseed.binance.org/")
+    inputs[2].send_keys("56")
+    inputs[3].send_keys("BNB")
+    inputs[4].send_keys("https://bscscan.com")
     driver.find_element_by_xpath('//button[text()="Salvar"]').click()
     print("Please provide a valid network name")
 
     driver.switch_to.window(driver.window_handles[0])
     time.sleep(3)
 
-def loginGoogle():
-    driver.execute_script('''window.open("https://accounts.google.com/servicelogin","_blank");''')
-    driver.switch_to.window(driver.window_handles[2])
-    time.sleep(1)
-    search_form = driver.find_element_by_id("identifierId")
-    search_form.send_keys('email')
-    driver.find_element_by_css_selector('.VfPpkd-vQzf8d').click()
-    nextButton = driver.find_elements_by_xpath('//*[@id ="identifierNext"]')
-    nextButton[0].click() 
-    search_form.send_keys('senha')
-    nextButton[0].click() 
-
 if __name__ == "__main__":
     driver = webdriver.Chrome()
     executable_path = "./chromedriver"
-
+# C:\Program Files\Google\Chrome\Application\chrome.exe
     chrome_options = Options()
     chrome_options.add_extension('./metamask.crx')
     chrome_options.add_experimental_option("useAutomationExtension", False)
     chrome_options.add_experimental_option("excludeSwitches",["enable-automation"])
 
     driver = webdriver.Chrome(executable_path=executable_path, chrome_options=chrome_options)
-    driver.get("https://play.pegaxy.io/renting?tab=share-profit&bloodLine=Hoz")
-    metamaskSetup("seed phrase", "senha")
+    driver.get("https://app.dankicastle.io/")
+    metamaskSetup("", "")
     changeMetamaskNetwork()
-    loginGoogle()
-    # rentHorse()
+    connectDanki()
+    getDanki()
 
-    # logar()
-    # elem = driver.find_element_by_name("q")
-    # elem.clear()
-    # elem.send_keys("pycon")
-    # elem.send_keys(Keys.RETURN)
     assert "No results found." not in driver.page_source
