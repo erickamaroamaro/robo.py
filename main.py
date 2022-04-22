@@ -82,8 +82,8 @@ def getDanki():
             time.sleep(3)
             driver.get('chrome-extension://{}/popup.html'.format(EXTENSION_ID))
             time.sleep(3)
-            driver.find_element_by_xpath('//*[@id="app-content"]/div/div[2]/div/div[2]/div[3]/div[2]/button[2]').click()
-            time.sleep(8)
+            driver.find_element_by_xpath('//*[@id="app-content"]/div/div[2]/div/div[4]/div[3]/footer/button[2]').click()
+            time.sleep(2)
             break
         else: 
             alert.accept()
